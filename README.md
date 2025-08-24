@@ -23,6 +23,8 @@ A Flask-based chatbot that answers HR-related FAQs using semantic search with se
 └── faq_index.pkl       # Cached embeddings (auto-generated)
 ```
 
+<img src="hrchatbot1.png" alt="hr-faq-chatbot" width="700">
+<img src="hrchatbot2.png" alt="hr-faq-chatbot" width="700">
 ## Installation
 
 1. Clone the repository:
