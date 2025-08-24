@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>HR FAQ Chatbot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="/static/style.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>AI-Powered HR FAQ Chatbot</h1>
+      <p class="subtitle">Ask a question about HR policies.</p>
+    </header>
+
+    <main>
+      <div class="chatbox" id="chatbox"></div>
+
+      <form id="chat-form">
+        <input id="query" type="text" placeholder="e.g., How many paid leaves do we get?" autocomplete="off" />
+        <button type="submit">Ask</button>
+      </form>
+
+      <section id="retrieval">
+        <h2>Retrieved FAQs</h2>
+        <div id="matches"></div>
+      </section>
+    </main>
+
+    <footer>
+      <small>
+        Retrieval: sentence-transformers •
+        Generation: <span id="gen-mode">Direct (no LLM)</span>
+      </small>
+    </footer>
+  </div>
+
+  <script>
+    async function askServer(q) {
+      const res = await fetch("/ask", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({query: q})
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({error: "Unknown error"}));
+        throw new Error(err.error || "Request failed");
+      }
+      return res.json();
+    }
+
+    function addChat(role, text) {
+      const el = document.getElementById("chatbox");
+      const div = document.createElement("div");
+      div.className = `msg ${role}`;
+      div.textContent = text;
+      el.appendChild(div);
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function showMatches(matches) {
+      const wrap = document.getElementById("matches");
+      wrap.innerHTML = "";
+      matches.forEach(m => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="score">score: ${m.score}</div>
+          <div class="q"><strong>Q:</strong> ${m.question}</div>
+          <div class="a"><strong>A:</strong> ${m.answer}</div>
+        `;
+        wrap.appendChild(card);
+      });
+    }
+
+    document.getElementById("chat-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const q = document.getElementById("query").value.trim();
+      if (!q) return;
+      addChat("user", q);
+      document.getElementById("query").value = "";
+      try {
+        const resp = await askServer(q);
+        addChat("bot", resp.answer);
+        showMatches(resp.matches || []);
+      } catch (err) {
+        addChat("bot", "Sorry, something went wrong.");
+      }
+    });
+
+    // Ping to learn generation mode from server capability
+    fetch("/ask", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({query: "hello"}) })
+      .then(r => r.json())
+      .then(() => { document.getElementById("gen-mode").textContent = "Direct (no LLM) or LLM if configured"; })
+      .catch(() => {});
+  </script>
+</body>
+</html>

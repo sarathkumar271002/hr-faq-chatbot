@@ -1,0 +1,6 @@
+Flask==3.0.3
+pandas==2.2.2
+numpy==1.26.4
+sentence-transformers==3.0.1
+torch>=2.1.0
+openai>=1.30.0  # optional; used only if OPENAI_API_KEY is set
