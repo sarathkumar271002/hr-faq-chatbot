@@ -1,14 +1,21 @@
 # HR FAQ Chatbot
 
-A Flask-based chatbot that answers HR-related FAQs using semantic search with sentence-transformers. Optionally, it integrates with OpenAI models for more natural responses if an API key is provided.
+A **Generative AI powered chatbot** built with Flask that answers HR-related FAQs.
+It uses **semantic search** with sentence-transformers to retrieve the most relevant answers, and optionally integrates with **OpenAI models** to generate natural, human-like responses.
+
+This is an example of a **Retrieval-Augmented Generation (RAG)** system, where the chatbot grounds its answers on HR FAQs provided in `faqs.csv`.
+
+<img src="hrchatbot1.png" alt="hr-faq-chatbot" width="700">
+<img src="hrchatbot2.png" alt="hr-faq-chatbot" width="700">
 
 ## Features
 
-* Search FAQs using semantic embeddings (`all-MiniLM-L6-v2`).
-* Fallback to direct FAQ answers without LLM if OpenAI API key is not set.
+* Semantic FAQ retrieval using embeddings (`all-MiniLM-L6-v2`).
+* Generative AI integration with OpenAI (e.g., GPT-4o-mini) for natural responses.
+* Falls back to direct FAQ answers if no API key is provided.
 * REST API endpoints for asking questions and reindexing FAQs.
-* Caching of embeddings for faster startup.
-* Easily extendable by updating the `faqs.csv` file.
+* Embedding cache for faster startup.
+* Easy to update: just edit `faqs.csv` to change knowledge base.
 
 ## Project Structure
 
@@ -23,8 +30,6 @@ A Flask-based chatbot that answers HR-related FAQs using semantic search with se
 └── faq_index.pkl       # Cached embeddings (auto-generated)
 ```
 
-<img src="hrchatbot1.png" alt="hr-faq-chatbot" width="700">
-<img src="hrchatbot2.png" alt="hr-faq-chatbot" width="700">
 ## Installation
 
 1. Clone the repository:
@@ -48,15 +53,17 @@ A Flask-based chatbot that answers HR-related FAQs using semantic search with se
    pip install -r requirements.txt
    ```
 
-4. (Optional) Configure OpenAI:
+4. Configure OpenAI (for Generative AI responses):
 
    * Copy `.env.example` to `.env`
-   * Add your OpenAI API key:
+   * Add your OpenAI credentials:
 
      ```
      OPENAI_API_KEY=sk-xxxx
      OPENAI_MODEL=gpt-4o-mini
      ```
+
+   Without this, the chatbot will still work using semantic search.
 
 ## Usage
 
@@ -79,11 +86,11 @@ A Flask-based chatbot that answers HR-related FAQs using semantic search with se
      }
      ```
 
-     Response:
+     Response (with OpenAI enabled):
 
      ```json
      {
-       "answer": "Employees are entitled to ...",
+       "answer": "Employees are entitled to annual leave as per HR policy...",
        "matches": [
          {"question": "...", "answer": "...", "score": 0.87}
        ]
@@ -95,7 +102,7 @@ A Flask-based chatbot that answers HR-related FAQs using semantic search with se
 
 3. Updating FAQs:
 
-   * Add or modify entries in `faqs.csv`.
+   * Modify entries in `faqs.csv`.
    * Call `/reindex` endpoint or restart the app.
 
 ## Dependencies
@@ -107,6 +114,11 @@ See `requirements.txt`:
 * numpy
 * sentence-transformers
 * torch
-* openai (optional)
+* openai (Generative AI integration)
 
 
+## 📢 Author
+
+👨‍💻 **Sarathkumar Soundarrajan**
+📌 LinkedIn: (https://www.linkedin.com/in/sarathkumar271002/))
+📌 GitHub: (https://github.com/sarathkumar271002)
