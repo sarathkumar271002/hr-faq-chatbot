@@ -114,7 +114,7 @@ See `requirements.txt`:
 * numpy
 * sentence-transformers
 * torch
-* openai (Generative AI integration)
+* OpenAI (Generative AI integration)
 
 
 ## 📢 Author
